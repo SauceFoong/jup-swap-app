@@ -176,7 +176,7 @@ export function SwapFeature() {
           </div>
 
           {/* Swap Direction Button */}
-          <div className="flex justify-center">
+          <div className="flex justify-center -my-2 relative z-10">
             <button
               onClick={handleSwapTokens}
               className="p-2 bg-gray-800 border border-gray-600 rounded-full hover:bg-gray-700 transition-colors"

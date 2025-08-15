@@ -5,6 +5,7 @@
 
 @theme inline {
   --color-button-color: #C1E791;
+  --color-jupiter-dark: #0D0E16;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-sidebar-ring: var(--sidebar-ring);
