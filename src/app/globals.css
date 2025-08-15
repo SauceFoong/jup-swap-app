@@ -4,6 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --color-button-color: #C1E791;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -116,7 +117,7 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-black text-white;
   }
 
   button:not(:disabled),
