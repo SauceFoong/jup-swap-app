@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { Search, Settings, Menu, X, ChevronDown } from 'lucide-react'
 import { WalletButton } from '@/components/solana/solana-provider'
@@ -33,9 +34,11 @@ export function JupiterNavbar() {
           <div className="flex items-center space-x-8">
             {/* Jupiter Logo */}
             <Link href="/" className="flex items-center space-x-2">
-              <img 
+              <Image 
                 src="/32x32j.png" 
                 alt="Jupiter" 
+                width={32}
+                height={32}
                 className="w-8 h-8"
               />
               <span className="text-white font-semibold text-lg">Jupiter</span>

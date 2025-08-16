@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { ChevronDown, Search } from 'lucide-react';
 import {
   DropdownMenu,
@@ -37,9 +38,11 @@ export function TokenSelector({ token, onTokenSelect, tokens }: TokenSelectorPro
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button className="flex items-center space-x-2 bg-gray-800/50 hover:bg-gray-700/50 rounded-xl px-3 py-2 transition-colors">
-          <img 
+          <Image 
             src={token.logoURI} 
             alt={token.name}
+            width={32}
+            height={32}
             className="w-8 h-8 rounded-full"
             onError={(e) => {
               e.currentTarget.style.display = 'none';
@@ -73,9 +76,11 @@ export function TokenSelector({ token, onTokenSelect, tokens }: TokenSelectorPro
               className="flex items-center space-x-3 p-3 hover:bg-[#2a2a2a] cursor-pointer"
             >
               <div className="relative">
-                <img 
+                <Image 
                   src={t.logoURI} 
                   alt={t.name}
+                  width={32}
+                  height={32}
                   className="w-8 h-8 rounded-full"
                   onError={(e) => {
                     e.currentTarget.style.display = 'none';

@@ -5,8 +5,6 @@ import { Toaster } from './ui/sonner'
 import { JupiterNavbar } from '@/components/jupiter-navbar'
 import React from 'react'
 import { AppFooter } from '@/components/app-footer'
-import { ClusterChecker } from '@/components/cluster/cluster-ui'
-import { AccountChecker } from '@/components/account/account-ui'
 
 export function AppLayout({
   children,
@@ -19,9 +17,6 @@ export function AppLayout({
       <div className="flex flex-col min-h-screen bg-jupiter-dark">
         <JupiterNavbar />
         <main className="flex-grow container mx-auto p-4">
-          <ClusterChecker>
-            <AccountChecker />
-          </ClusterChecker>
           {children}
         </main>
         <AppFooter />

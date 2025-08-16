@@ -4,8 +4,7 @@ import { WalletError } from '@solana/wallet-adapter-base'
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react'
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
 import dynamic from 'next/dynamic'
-import { ReactNode, useCallback, useMemo } from 'react'
-import { useCluster } from '../cluster/cluster-data-access'
+import { ReactNode, useCallback } from 'react'
 import '@solana/wallet-adapter-react-ui/styles.css'
 
 export const WalletButton = dynamic(async () => (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton, {
@@ -13,10 +12,21 @@ export const WalletButton = dynamic(async () => (await import('@solana/wallet-ad
 })
 
 export function SolanaProvider({ children }: { children: ReactNode }) {
-  const { cluster } = useCluster()
-  const endpoint = useMemo(() => cluster.endpoint, [cluster])
+  // Use a dummy endpoint since we're moving all RPC calls to backend
+  // Only wallet connection/signing happens on frontend
+  const endpoint = 'http://localhost'
+  
   const onError = useCallback((error: WalletError) => {
-    console.error(error)
+    console.error('Wallet error:', error)
+    
+    // More user-friendly error messages
+    if (error.message?.includes('rejected')) {
+      console.log('User rejected wallet connection')
+    } else if (error.message?.includes('timeout')) {
+      console.error('Wallet connection timeout')
+    } else {
+      console.error('Wallet error details:', error)
+    }
   }, [])
 
   return (

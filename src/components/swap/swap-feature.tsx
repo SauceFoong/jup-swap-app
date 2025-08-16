@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { SwapCard } from './swap-card';
 import { TokenSelector } from './token-selector';
-import { SwapInput } from './swap-input';
-import { SwapButton } from './swap-button';
 import { ArrowUpDown, Bell, RefreshCw, Rocket, Settings } from 'lucide-react';
+import { useJupiterSwap } from '@/hooks/useJupiterSwap';
+import { toast } from 'sonner';
 
 interface Token {
   symbol: string;
@@ -52,19 +52,55 @@ export function SwapFeature() {
   const [mode, setMode] = useState<SwapMode>('instant');
   const [fromToken, setFromToken] = useState<Token>(POPULAR_TOKENS[1]); // USDC
   const [toToken, setToToken] = useState<Token>(POPULAR_TOKENS[0]); // SOL
-  const [fromAmount, setFromAmount] = useState('1');
-  const [toAmount, setToAmount] = useState('0.00519196');
-  const [isLoading, setIsLoading] = useState(false);
-  const [slippage, setSlippage] = useState('0.5');
+  const [fromAmount, setFromAmount] = useState('');
+  const [toAmount, setToAmount] = useState('');
+  const [slippage] = useState('0.5');
+  
+  const {
+    swapState,
+    getQuote,
+    executeSwap,
+    tokenPrices,
+    fetchTokenPrice,
+    isWalletConnected
+  } = useJupiterSwap();
+
+  // Fetch token prices on mount
+  useEffect(() => {
+    POPULAR_TOKENS.forEach(token => {
+      fetchTokenPrice(token.address);
+    });
+  }, [fetchTokenPrice]);
+
+  // Get quote when amount or tokens change
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      if (fromAmount && parseFloat(fromAmount) > 0) {
+        getQuote(fromToken, toToken, parseFloat(fromAmount), parseFloat(slippage));
+      } else {
+        setToAmount('');
+      }
+    }, 500);
+
+    return () => clearTimeout(debounceTimer);
+  }, [fromAmount, fromToken, toToken, slippage, getQuote]);
+
+  // Update output amount when quote changes
+  useEffect(() => {
+    if (swapState.quote && fromAmount) {
+      const outputAmount = formatNumber(parseFloat(swapState.quote.outAmount) / Math.pow(10, toToken.decimals));
+      setToAmount(outputAmount);
+    }
+  }, [swapState.quote, fromAmount, toToken.decimals]);
 
   const handleSwapTokens = () => {
     const tempToken = fromToken;
     setFromToken(toToken);
     setToToken(tempToken);
     
-    const tempAmount = fromAmount;
-    setFromAmount(toAmount);
-    setToAmount(tempAmount);
+    // Clear amounts when swapping tokens
+    setFromAmount('');
+    setToAmount('');
   };
 
   const formatNumber = (num: number): string => {
@@ -78,22 +114,51 @@ export function SwapFeature() {
 
   const handleFromAmountChange = (value: string) => {
     setFromAmount(value);
-    if (value && !isNaN(Number(value))) {
-      const mockRate = 0.00519196;
-      const result = Number(value) * mockRate;
-      setToAmount(formatNumber(result));
-    } else {
-      setToAmount('');
-    }
   };
 
   const handleSwap = async () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      setFromAmount('');
-      setToAmount('');
-    }, 2000);
+    if (!isWalletConnected) {
+      toast.error('Please connect your wallet first');
+      return;
+    }
+
+    if (!swapState.quote) {
+      toast.error('No quote available');
+      return;
+    }
+
+    if (!fromAmount || parseFloat(fromAmount) <= 0) {
+      toast.error('Please enter a valid amount');
+      return;
+    }
+
+    try {
+      const signature = await executeSwap(swapState.quote);
+      if (signature) {
+        toast.success('Swap completed successfully!', {
+          description: `Transaction: ${signature.slice(0, 8)}...${signature.slice(-8)}`
+        });
+        setFromAmount('');
+        setToAmount('');
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      
+      // Simple error handling
+      if (errorMessage.includes('cancelled by user')) {
+        toast.info('Transaction cancelled', {
+          description: 'You cancelled the swap transaction'
+        });
+      } else if (errorMessage.includes('Insufficient funds')) {
+        toast.error('Insufficient funds', {
+          description: 'You don\'t have enough tokens for this swap'
+        });
+      } else {
+        toast.error('Swap failed', {
+          description: 'Please try again in a moment'
+        });
+      }
+    }
   };
 
   return (
@@ -169,7 +234,14 @@ export function SwapFeature() {
                     className="bg-transparent text-right text-2xl font-semibold text-white outline-none min-w-0 max-w-[120px] truncate"
                     placeholder="0"
                   />
-                  <div className="text-sm text-gray-400">$1</div>
+                  <div className="text-sm text-gray-400">
+                    {swapState.usdValue && swapState.usdValue > 0 ? 
+                      `$${swapState.usdValue.toFixed(2)}` : 
+                      tokenPrices[fromToken.address] && tokenPrices[fromToken.address] > 0 && fromAmount ?
+                      `$${(tokenPrices[fromToken.address] * parseFloat(fromAmount || '0')).toFixed(2)}` :
+                      ''
+                    }
+                  </div>
                 </div>
               </div>
             </div>
@@ -196,8 +268,17 @@ export function SwapFeature() {
                   tokens={POPULAR_TOKENS}
                 />
                 <div className="text-right min-w-0 max-w-[140px]">
-                  <div className="text-2xl font-semibold text-white truncate" title={toAmount}>{toAmount}</div>
-                  <div className="text-sm text-gray-400">$1</div>
+                  <div className="text-2xl font-semibold text-white truncate" title={toAmount}>
+                    {swapState.loading ? (
+                      <div className="animate-pulse">...</div>
+                    ) : toAmount || '0'}
+                  </div>
+                  <div className="text-sm text-gray-400">
+                    {tokenPrices[toToken.address] && tokenPrices[toToken.address] > 0 && toAmount ? 
+                      `$${(tokenPrices[toToken.address] * parseFloat(toAmount || '0')).toFixed(2)}` : 
+                      ''
+                    }
+                  </div>
                 </div>
               </div>
             </div>
@@ -208,25 +289,50 @@ export function SwapFeature() {
             <span className="border-b border-dotted border-gray-600">Routers: Auto</span>
           </div>
 
-          {/* Connect Button */}
-          <button className="w-full bg-button-color hover:bg-button-color/80 text-black font-semibold py-4 rounded-2xl transition-colors">
-            Connect
+          {/* Swap Button */}
+          <button 
+            onClick={handleSwap}
+            disabled={!isWalletConnected || swapState.loading || !fromAmount || !swapState.quote}
+            className="w-full bg-button-color hover:bg-button-color/80 disabled:bg-gray-600 disabled:text-gray-400 text-black font-semibold py-4 rounded-2xl transition-colors"
+          >
+            {swapState.loading ? (
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black mr-2"></div>
+                {swapState.quote ? 'Swapping...' : 'Getting Quote...'}
+              </div>
+            ) : !isWalletConnected ? (
+              'Connect Wallet'
+            ) : !fromAmount ? (
+              'Enter Amount'
+            ) : !swapState.quote ? (
+              'No Quote Available'
+            ) : (
+              'Swap'
+            )}
           </button>
 
           {/* Rate and Fee Information */}
-          <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center gap-2">
-              <span className="text-gray-400">Rate</span>
-              <span className="text-white">1 USDC ≈ 0.0051919 SOL</span>
-              <RefreshCw className="w-3 h-3 text-gray-400" />
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="bg-gray-800 px-2 py-1 rounded text-xs text-gray-300">
-                🌐 Metis v1.6
+          {swapState.quote && (
+            <div className="flex items-center justify-between text-sm">
+              <div className="flex items-center gap-2">
+                <span className="text-gray-400">Rate</span>
+                <span className="text-white">
+                  1 {fromToken.symbol} ≈ {swapState.rate.toFixed(6)} {toToken.symbol}
+                </span>
+                <RefreshCw className="w-3 h-3 text-gray-400" />
               </div>
-              <span className="text-[#C8FF02] font-medium">0% FEE</span>
+              <div className="flex items-center gap-2">
+                <div className="bg-gray-800 px-2 py-1 rounded text-xs text-gray-300">
+                  🌐 Jupiter v6
+                </div>
+                {swapState.priceImpact > 0 && (
+                  <span className={`font-medium ${swapState.priceImpact > 1 ? 'text-red-400' : 'text-yellow-400'}`}>
+                    {swapState.priceImpact.toFixed(2)}% Impact
+                  </span>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </SwapCard>
     </div>

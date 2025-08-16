@@ -19,10 +19,28 @@ export enum ClusterNetwork {
   Custom = 'custom',
 }
 
-// By default, we don't configure the mainnet-beta cluster
-// The endpoint provided by clusterApiUrl('mainnet-beta') does not allow access from the browser due to CORS restrictions
-// To use the mainnet-beta cluster, provide a custom endpoint
+// Reliable mainnet RPC endpoints that work in browsers
 export const defaultClusters: SolanaCluster[] = [
+  {
+    name: 'mainnet-helius',
+    endpoint: 'https://mainnet.helius-rpc.com/?api-key=',
+    network: ClusterNetwork.Mainnet,
+  },
+  {
+    name: 'mainnet-genesysgo',
+    endpoint: 'https://ssc-dao.genesysgo.net/',
+    network: ClusterNetwork.Mainnet,
+  },
+  {
+    name: 'mainnet-beta',
+    endpoint: 'https://api.mainnet-beta.solana.com',
+    network: ClusterNetwork.Mainnet,
+  },
+  {
+    name: 'mainnet-syndica',
+    endpoint: 'https://solana-mainnet.rpc.extrnode.com',
+    network: ClusterNetwork.Mainnet,
+  },
   {
     name: 'devnet',
     endpoint: clusterApiUrl('devnet'),
