@@ -166,39 +166,39 @@ export function SwapFeature() {
       <SwapCard>
         <div className="p-4 space-y-4">
           {/* Tab Navigation */}
-          <div className="flex bg-gray-800/50 rounded-2xl p-1">
+          <div className="flex bg-gray-800/50 rounded-2xl p-1 overflow-hidden">
             <button
               onClick={() => setMode('instant')}
-              className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+              className={`flex-1 flex items-center justify-center gap-1 px-2 py-3 rounded-xl text-xs font-medium transition-all min-w-0 ${
                 mode === 'instant'
                   ? 'bg-button-color text-black'
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              <Rocket className="w-4 h-4" />
-              Instant
+              <Rocket className="w-3 h-3 flex-shrink-0" />
+              <span className="truncate">Instant</span>
             </button>
             <button
               onClick={() => setMode('trigger')}
-              className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+              className={`flex-1 flex items-center justify-center gap-1 px-2 py-3 rounded-xl text-xs font-medium transition-all min-w-0 ${
                 mode === 'trigger'
                   ? 'bg-button-color text-black'
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              <Bell className="w-4 h-4" />
-              Trigger
+              <Bell className="w-3 h-3 flex-shrink-0" />
+              <span className="truncate">Trigger</span>
             </button>
             <button
               onClick={() => setMode('recurring')}
-              className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+              className={`flex-1 flex items-center justify-center gap-1 px-2 py-3 rounded-xl text-xs font-medium transition-all min-w-0 ${
                 mode === 'recurring'
                   ? 'bg-button-color text-black'
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              <RefreshCw className="w-4 h-4" />
-              Recurring
+              <RefreshCw className="w-3 h-3 flex-shrink-0" />
+              <span className="truncate">Recurring</span>
             </button>
           </div>
 

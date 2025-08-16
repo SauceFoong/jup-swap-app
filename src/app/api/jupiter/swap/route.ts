@@ -4,7 +4,6 @@ export async function POST(request: NextRequest) {
   try {
     const requestBody = await request.json()
     
-    console.log('Creating Jupiter swap transaction for:', requestBody.userPublicKey)
     
     // Build request body exactly like Jupiter's example
     const swapRequestBody = {
@@ -15,7 +14,6 @@ export async function POST(request: NextRequest) {
       prioritizationFeeLamports: requestBody.prioritizationFeeLamports || 'auto'
     }
 
-    console.log('Jupiter swap request body keys:', Object.keys(swapRequestBody))
 
     // Use fetch exactly like Jupiter's example
     const response = await fetch('https://quote-api.jup.ag/v6/swap', {
@@ -26,8 +24,6 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify(swapRequestBody)
     })
 
-    console.log('Jupiter swap response status:', response.status)
-    console.log('Jupiter swap response headers:', Object.fromEntries(response.headers.entries()))
 
     if (!response.ok) {
       const errorText = await response.text()
@@ -39,7 +35,6 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await response.json()
-    console.log('Swap response:', data)
     
     return NextResponse.json(data)
     

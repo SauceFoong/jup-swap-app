@@ -74,10 +74,8 @@ export function useTransferSol({ address }: { address: PublicKey }) {
         // Send transaction and await for signature
         await connection.confirmTransaction({ signature, ...latestBlockhash }, 'confirmed')
 
-        console.log(signature)
         return signature
-      } catch (error: unknown) {
-        console.log('error', `Transaction failed! ${error}`, signature)
+      } catch {
 
         return
       }
@@ -86,7 +84,6 @@ export function useTransferSol({ address }: { address: PublicKey }) {
       if (signature) {
         // TODO: Add back Toast
         // transactionToast(signature)
-        console.log('Transaction sent', signature)
       }
       await Promise.all([
         client.invalidateQueries({
@@ -120,10 +117,9 @@ export function useRequestAirdrop({ address }: { address: PublicKey }) {
       await connection.confirmTransaction({ signature, ...latestBlockhash }, 'confirmed')
       return signature
     },
-    onSuccess: async (signature) => {
+    onSuccess: async () => {
       // TODO: Add back Toast
       // transactionToast(signature)
-      console.log('Airdrop sent', signature)
       await Promise.all([
         client.invalidateQueries({
           queryKey: ['get-balance', { endpoint: connection.rpcEndpoint, address }],
