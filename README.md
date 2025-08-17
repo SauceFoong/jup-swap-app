@@ -2,7 +2,7 @@
 
 A modern, feature-rich decentralized exchange (DEX) interface built with Next.js that integrates with Jupiter's aggregator protocol on Solana. This application provides a seamless token swapping experience with real-time quotes, wallet integration, and comprehensive error handling.
 
-## ✨ Features
+## Features
 
 ### Core Functionality
 - **Token Swapping**: Instant token swaps powered by Jupiter's v6 aggregator
@@ -43,7 +43,7 @@ A modern, feature-rich decentralized exchange (DEX) interface built with Next.js
 - **State Management**: React hooks, Jotai, TanStack Query
 - **Development**: ESLint, Prettier, PostCSS
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Node.js 18+ and npm/yarn/pnpm
@@ -83,7 +83,7 @@ npm run build
 npm run start
 ```
 
-## 🏗 Project Structure
+## Project Structure
 
 ```
 src/
@@ -112,7 +112,7 @@ src/
 └── styles/               # Global styles
 ```
 
-## 🔧 Configuration
+## Configuration
 
 ### Supported Tokens
 The app comes pre-configured with popular Solana tokens:
@@ -133,7 +133,7 @@ The application uses Solana's mainnet-beta RPC endpoint. For production use, con
 - Alchemy
 - GenesisGo
 
-## 🧪 API Endpoints
+## API Endpoints
 
 ### Quote Endpoint
 ```
@@ -156,28 +156,3 @@ GET /api/jupiter/price?ids={tokenMint}
 POST /api/jupiter/submit
 Body: { signedTransaction, lastValidBlockHeight }
 ```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
-## 🙏 Acknowledgments
-
-- [Jupiter Protocol](https://jup.ag/) for providing the aggregator infrastructure
-- [Solana Foundation](https://solana.org/) for the blockchain platform
-- [Solana Wallet Adapter](https://github.com/solana-labs/wallet-adapter) for wallet integration
-
-## 📞 Support
-
-For support and questions:
-- Check the [Jupiter Documentation](https://docs.jup.ag/)
-- Review [Solana Documentation](https://docs.solana.com/)
-- Open an issue in this repository
